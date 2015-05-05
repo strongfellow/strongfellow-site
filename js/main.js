@@ -63,7 +63,7 @@ require(['jquery', 'moment.min', 'bootstrap', 'block'], function($, moment, boot
 
 
   var loadBlock = function(blockHash) {
-    var path = '/v1/block/' + blockHash  + '/raw';
+    var path = '/networks/f9beb4d9/blocks/' + blockHash  + '/payload';
     $.ajax({
       url: path,
       type: "GET",
@@ -96,7 +96,7 @@ require(['jquery', 'moment.min', 'bootstrap', 'block'], function($, moment, boot
           $('#block-summary').empty().append(table);
 
           var div = $('#transactions');
-          div.append($('<h3>').html('Transactions'));
+          div.empty().append($('<h3>').html('Transactions'));
           var transactionsTable = $('<table>').appendTo(div);
           for (var i = 0; i < blk.transactions.length; i++) {
             var tx = blk.transactions[i];
