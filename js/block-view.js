@@ -98,14 +98,45 @@ require(['jquery', 'moment.min', 'bootstrap', 'block', 'Long'], function($, mome
     });
   }
 
+  var showContext = function(context) {
+    var reward = context.outputValue.subtract(context.inputValue).toString(10);
+    var tx0 = context.block.transactions[0];
+    var v = new Long();
+    for (var i = 0; i < tx0.outputs.length; i++) {
+      v = v.add(tx0.outputs[i].value);
+    }
+    $('#reward').html(reward);
+    v = v.subtract(reward);
+    $('#fees').html(v.toString(10));
+  }
+
   $(function() {
-    var block = /[&\?]block=(.{64})/.exec(window.location.href)[1]
-    loadBlock(block, function(blk) {console.log(blk);
+    var context = {}
+    var blockHash = /[&\?]block=(.{64})/.exec(window.location.href)[1]
+    loadBlock(blockHash, function(blk) {
       $('#ntx').html(blk.transactions.length);
+      $('#timestamp').html(moment.unix(blk.header.time).utc().format());
+      $('#hash').html(blk.header.hash);
+      $('#prevBlockHash').html(blk.header.hashPrevBlock);
+      $('#merkleRoot').html(blk.header.hashMerkleRoot);
+      var totalOutputValue = new Long();
+      for (var i = 0; i < blk.transactions.length; i++) {
+        var tx = blk.transactions[i];
+        var outputs = tx.outputs;
+        for (var j = 0; j < outputs.length; j++) {
+          totalOutputValue = totalOutputValue.add(outputs[j].value);
+        }
+      }
+      $('#txout-total').html(totalOutputValue.toString(10));
+
+      context.outputValue = totalOutputValue;
+      context.block = blk;
+      if (context.txins) {
+        showContext(context);
+      }
     });
 
-    loadTxouts(block, function(txs) {
-      console.log(txs);
+    loadTxouts(blockHash, function(txs) {
       var totalValue = new Long(0, 0, true)
       var values = [];
       for (var i = 8; i < txs.length; i += 8) {
@@ -115,10 +146,15 @@ require(['jquery', 'moment.min', 'bootstrap', 'block', 'Long'], function($, mome
           sum = sum.add(txs[i + j]);
         }
         totalValue = totalValue.add(sum)
-        console.log(totalValue.toString(10) + " => " + sum.toString(10))
         values.push(sum)
       }
       $('#txin-total').html(totalValue.toString(10));
+
+      context.inputValue = totalValue;
+      context.txins = txs;
+      if (context.block) {
+        showContext(context);
+      }
     });
   });
 });

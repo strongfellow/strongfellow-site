@@ -1,6 +1,6 @@
 
  
-define(['btc/util'], function(util) {
+define(['btc/util', 'Long'], function(util, Long) {
 
   var BlockParser = function() {
 
@@ -14,9 +14,10 @@ define(['btc/util'], function(util) {
     };
 
     this.uint = function(n) {
-      var result = 0;
+      var result = new Long();
       for (var i = 0; i < n; i++) {
-        result += (this.bytes[this.index + i] * Math.pow(256, i));
+        var addend = new Long(this.bytes[this.index + i]).shiftLeft(8 * i);
+        result = result.add(addend);
       }
       this.index += n;
       return result;
