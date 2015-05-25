@@ -116,9 +116,30 @@ require(['jquery', 'moment.min', 'bootstrap', 'block', 'Long'], function($, mome
     loadBlock(blockHash, function(blk) {
       $('#ntx').html(blk.transactions.length);
       $('#timestamp').html(moment.unix(blk.header.time).utc().format());
+      $('#nonce').html(blk.header.nonce);
+      $('#size').html(blk.length);
+      $('#version').html(blk.header.version);
+      
+      var bits = blk.header.bits;
+      var bitsAsLong = "";
+      for (var i = 0; i < 4; i++) {
+        bitsAsLong += bits.substring(6 - 2*i, 8 - 2 * i);
+      }
+      var b = new Long.fromString(bitsAsLong, true, 16);
+
+      $('#bits').html(b.toString(10));
+      
+/*
+def bits2target_int(bits_bytes):
+    exp = bin2int(bits_bytes[: 1]) # exponent is the first byte
+    mult = bin2int(bits_bytes[1:]) # multiplier is all but the first byte
+    return mult * (2 ** (8 * (exp - 3)))
+*/
+      // hashes
       $('#hash').html(blk.header.hash);
       $('#prevBlockHash').html(blk.header.hashPrevBlock);
       $('#merkleRoot').html(blk.header.hashMerkleRoot);
+
       var totalOutputValue = new Long();
       for (var i = 0; i < blk.transactions.length; i++) {
         var tx = blk.transactions[i];
