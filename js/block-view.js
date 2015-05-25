@@ -8,7 +8,7 @@ requirejs.config({
   }
 });
 
-require(['jquery', 'moment.min', 'bootstrap', 'block'], function($, moment, bootstrap, block) {
+require(['jquery', 'moment.min', 'bootstrap', 'block', 'Long'], function($, moment, bootstrap, block, Long) {
 
  /**
  *
@@ -60,7 +60,24 @@ require(['jquery', 'moment.min', 'bootstrap', 'block'], function($, moment, boot
     }
   });
 
-
+  var loadTxouts = function(blockHash, cb) {
+    var path = '/networks/f9beb4d9/blocks/' + blockHash  + '/txins';
+    $.ajax({
+      url: path,
+      type: "GET",
+      dataType: "binary",
+      processData: false,
+      success: function(blob){
+        var reader = new FileReader();
+        reader.addEventListener("loadend", function() {
+          var arrayBuffer = reader.result;
+          var view   = new Uint8Array(arrayBuffer);
+          cb(view);
+        });
+        reader.readAsArrayBuffer(blob);
+      }
+    });
+  }
   var loadBlock = function(blockHash, cb) {
     var path = '/networks/f9beb4d9/blocks/' + blockHash  + '/payload';
     $.ajax({
@@ -79,11 +96,25 @@ require(['jquery', 'moment.min', 'bootstrap', 'block'], function($, moment, boot
         reader.readAsArrayBuffer(blob);
       }
     });
-
   }
 
   $(function() {
     var block = /[&\?]block=(.{64})/.exec(window.location.href)[1]
-    loadBlock(block, function(blk) {console.log(blk);});
+    loadBlock(block, function(blk) {console.log(blk);
+      $('#ntx').html(blk.transactions.length);
+    });
+    loadTxouts(block, function(txs) {
+      console.log(txs);
+      var values = [];
+      for (var i = 0; i < txs.length; i += 8) {
+        var sum = new Long(0)
+        for (var j = 7; j > -1; j--) {
+          sum = sum.shiftLeft(8);
+          sum = sum.add(txs[i + j]);
+        }
+        values.push(sum)
+      }
+      console.log(values)
+    });
   });
 });
