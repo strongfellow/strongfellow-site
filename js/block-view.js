@@ -103,18 +103,22 @@ require(['jquery', 'moment.min', 'bootstrap', 'block', 'Long'], function($, mome
     loadBlock(block, function(blk) {console.log(blk);
       $('#ntx').html(blk.transactions.length);
     });
+
     loadTxouts(block, function(txs) {
       console.log(txs);
+      var totalValue = new Long(0, 0, true)
       var values = [];
-      for (var i = 0; i < txs.length; i += 8) {
-        var sum = new Long(0)
+      for (var i = 8; i < txs.length; i += 8) {
+        var sum = new Long(0, 0, true)
         for (var j = 7; j > -1; j--) {
           sum = sum.shiftLeft(8);
           sum = sum.add(txs[i + j]);
         }
+        totalValue = totalValue.add(sum)
+        console.log(totalValue.toString(10) + " => " + sum.toString(10))
         values.push(sum)
       }
-      console.log(values)
+      $('#txin-total').html(totalValue.toString(10));
     });
   });
 });
