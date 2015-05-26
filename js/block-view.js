@@ -125,9 +125,34 @@ require(['jquery', 'moment.min', 'bootstrap', 'block', 'Long'], function($, mome
       for (var i = 0; i < 4; i++) {
         bitsAsLong += bits.substring(6 - 2*i, 8 - 2 * i);
       }
+      
       var b = new Long.fromString(bitsAsLong, true, 16);
 
       $('#bits').html(b.toString(10));
+
+      var t = bitsAsLong.substring(2);
+      var exp = parseInt(bitsAsLong.substring(0, 2), 16);
+      for (var i = 0; i < (exp - 3); i++) {
+        t += "00";
+      }
+
+      var target = t;
+      while (target.length < 64) {
+        target = "00" + target;
+      }
+
+      var difficulty = 0;
+      $('#target').html(target);
+     
+      var base = 'FFFF0000000000000000000000000000000000000000000000000000'
+      while (t.substring(t.length - 2) == "00") {
+        t = t.substring(0, t.length - 2);
+        base = base.substring(0, base.length - 2);
+      }
+
+      var difficulty = parseInt(base, 16) / parseInt(t, 16);
+
+      $('#difficulty').html(difficulty);
       
 /*
 def bits2target_int(bits_bytes):
