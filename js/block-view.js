@@ -108,6 +108,27 @@ require(['jquery', 'moment.min', 'bootstrap', 'block', 'Long'], function($, mome
     $('#reward').html(reward);
     v = v.subtract(reward);
     $('#fees').html(v.toString(10));
+
+    var n = 0;
+    var txs = context.block.transactions;
+    for (var i = 0; i < txs.length; i++) {
+      var tx = txs[i];
+      var txdiv = $('<div>').addClass('txdiv');
+      var table = $('<table>')
+        .attr({cellspacing:'0', cellpadding: '0'})
+        .css({padding: '0px', float: 'left',margin:'0px',width:'100%'})
+        .addClass('table table-striped').appendTo(txdiv);
+      var tbody = $('<tbody>').appendTo(table);
+      tbody.append($('<tr>').append(
+        $('<th>').attr({align:'left',colspan:'3'})
+                 .append($('<a>').html(tx.hash))));
+      var txtotal = new Long();
+      $('<div>').css({'padding-bottom':'30px', 'width':'100%', 'text-align': 'right', 'clear':'both'})
+        .append($('<button>')
+                .addClass('btn btn-success cb').append($('<span>').html(txtotal.toString(10))))
+        .appendTo(txdiv)
+      $('#tx-div').append(txdiv);
+    }
   }
 
   $(function() {
@@ -145,21 +166,14 @@ require(['jquery', 'moment.min', 'bootstrap', 'block', 'Long'], function($, mome
       $('#target').html(target);
      
       var base = 'FFFF0000000000000000000000000000000000000000000000000000'
-      while (t.substring(t.length - 2) == "00") {
+      while (t.substring(t.length - 2) == "00" && base.substring(base.length - 2) == "00") {
         t = t.substring(0, t.length - 2);
         base = base.substring(0, base.length - 2);
       }
-
       var difficulty = parseInt(base, 16) / parseInt(t, 16);
 
       $('#difficulty').html(difficulty);
       
-/*
-def bits2target_int(bits_bytes):
-    exp = bin2int(bits_bytes[: 1]) # exponent is the first byte
-    mult = bin2int(bits_bytes[1:]) # multiplier is all but the first byte
-    return mult * (2 ** (8 * (exp - 3)))
-*/
       // hashes
       $('#hash').html(blk.header.hash);
       $('#prevBlockHash').html(blk.header.hashPrevBlock);
