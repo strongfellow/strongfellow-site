@@ -112,6 +112,7 @@ require(['jquery', 'moment.min', 'bootstrap', 'block', 'Long'], function($, mome
     var n = 0;
     var txs = context.block.transactions;
     for (var i = 0; i < txs.length; i++) {
+      var txtotal = new Long();
       var tx = txs[i];
       var txdiv = $('<div>').addClass('txdiv');
       var table = $('<table>')
@@ -122,7 +123,10 @@ require(['jquery', 'moment.min', 'bootstrap', 'block', 'Long'], function($, mome
       tbody.append($('<tr>').append(
         $('<th>').attr({align:'left',colspan:'3'})
                  .append($('<a>').html(tx.hash))));
-      var txtotal = new Long();
+      var txins = $('<td>').addClass('txtd hidden-phone').html('in');
+      var arrow = $('<td>').addClass('hidden-phone');
+      var txouts = $('<td>').addClass('txtd').html('out');
+      tbody.append($('<tr>').append(txins).append(arrow).append(txouts));
       $('<div>').css({'padding-bottom':'30px', 'width':'100%', 'text-align': 'right', 'clear':'both'})
         .append($('<button>')
                 .addClass('btn btn-success cb').append($('<span>').html(txtotal.toString(10))))
