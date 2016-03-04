@@ -179,15 +179,13 @@ define(['btc/util', 'Long'], function(util, Long) {
       this.bytes = bytes;
       this.index = (typeof idx != 'undefined') ? idx : 0;
 
-      var magic = this.hex(4);
-      var length = this.uint32();
+//      var magic = this.hex(4);
+//      var length = this.uint32();
       var header = this.header();
       var txs = [];
       this.varInt(this.transactionAdder(txs));
 
       return {
-        magic: magic,
-        length: length,
         header: header,
         transactions: txs
       }

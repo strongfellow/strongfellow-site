@@ -79,7 +79,7 @@ require(['jquery', 'moment.min', 'bootstrap', 'block', 'Long'], function($, mome
     });
   }
   var loadBlock = function(blockHash, cb) {
-    var path = '/networks/f9beb4d9/blocks/' + blockHash  + '/payload';
+    var path = '/blocks/' + blockHash;
     $.ajax({
       url: path,
       type: "GET",
@@ -91,6 +91,7 @@ require(['jquery', 'moment.min', 'bootstrap', 'block', 'Long'], function($, mome
           var arrayBuffer = reader.result;
           var view   = new Uint8Array(arrayBuffer);
           var blk = block.parseBlock(view);
+          blk.length = view.length;
           cb(blk);
         });
         reader.readAsArrayBuffer(blob);
@@ -141,9 +142,9 @@ require(['jquery', 'moment.min', 'bootstrap', 'block', 'Long'], function($, mome
     loadBlock(blockHash, function(blk) {
       $('#ntx').html(blk.transactions.length);
       $('#timestamp').html(moment.unix(blk.header.time).utc().format());
-      $('#nonce').html(blk.header.nonce);
-      $('#size').html(blk.length);
-      $('#version').html(blk.header.version);
+      $('#nonce').html(blk.header.nonce.toString());
+      $('#size').html(blk.length.toString());
+      $('#version').html(blk.header.version.toString());
       
       var bits = blk.header.bits;
       var bitsAsLong = "";
@@ -199,7 +200,7 @@ require(['jquery', 'moment.min', 'bootstrap', 'block', 'Long'], function($, mome
         showContext(context);
       }
     });
-
+/**
     loadTxouts(blockHash, function(txs) {
       var totalValue = new Long(0, 0, true)
       var values = [];
@@ -220,5 +221,6 @@ require(['jquery', 'moment.min', 'bootstrap', 'block', 'Long'], function($, mome
         showContext(context);
       }
     });
+*/
   });
 });
