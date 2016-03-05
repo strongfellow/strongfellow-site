@@ -61,6 +61,9 @@ require(['jquery', 'moment.min', 'bootstrap', 'block', 'Long'], function($, mome
   });
 
   var loadTxouts = function(blockHash, cb) {
+    var view = new Uint8Array();
+    cb(view);
+    /**
     var path = '/networks/f9beb4d9/blocks/' + blockHash  + '/txins';
     $.ajax({
       url: path,
@@ -77,6 +80,7 @@ require(['jquery', 'moment.min', 'bootstrap', 'block', 'Long'], function($, mome
         reader.readAsArrayBuffer(blob);
       }
     });
+    */
   }
   var loadBlock = function(blockHash, cb) {
     var path = '/blocks/' + blockHash;
@@ -200,7 +204,7 @@ require(['jquery', 'moment.min', 'bootstrap', 'block', 'Long'], function($, mome
         showContext(context);
       }
     });
-/**
+
     loadTxouts(blockHash, function(txs) {
       var totalValue = new Long(0, 0, true)
       var values = [];
@@ -221,6 +225,6 @@ require(['jquery', 'moment.min', 'bootstrap', 'block', 'Long'], function($, mome
         showContext(context);
       }
     });
-*/
+
   });
 });
